@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>题库查找</title>
+    <!-- <script type="text/javascript" src='./xlsx.core.min.js'></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.1/xlsx.core.min.js"></script>
+    <style>
+        .lqwvje-btn {
+            display: inline-block;
+            height: 38px;
+            line-height: 38px;
+            padding: 0 18px;
+            background-color: #009688;
+            color: #fff;
+            white-space: nowrap;
+            text-align: center;
+            font-size: 14px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <label id="realBtn" class="lqwvje-btn">
+        <input type="file" id="testFile" hidden="hidden">
+        选择题库文件
+    </label>
+ <div>输入关键字：<input id="keyword" type="text" style="visibility: hidden;"></div><br>
+ <div><button type="button" id="btnFind" style="width:300px; visibility: hidden;">查找</button></div>
+    <p id="find">
+    </p>
+
+    <script type="text/javascript">
+        const result = [];
+        //首先监听input框的变动，选中一个新的文件会触发change事件
+        document.getElementById('btnFind').addEventListener("click",btnFind);
+        document.querySelector("#testFile").addEventListener("change", function () {
+            //获取到选中的文件
+            var file = document.querySelector("#testFile").files[0];
+            if (file.size > 1024 * 1024 *5) {
+                alert('当前文件大小:' + Math.floor(file.size / 1024) + 'KB,文件不能大于5MB');
+                return false;
+            }
+            var type = file.name.split('.');
+            if (type[type.length - 1] !== 'xlsx' && type[type.length - 1] !== 'xls') {
+                alert('只能选择excel文件导入');
+                return false;
+            }
+            const reader = new FileReader();
+            reader.readAsBinaryString(file);
+            reader.onload = function (e) {
+                const data = e.target.result;
+                const zzexcel = window.XLSX.read(data, {
+                    type: 'binary'
+                });
+
+                // for (let i = 0; i < zzexcel.SheetNames.length; i++) {
+                //     const newData = window.XLSX.utils.sheet_to_json(zzexcel.Sheets[zzexcel.SheetNames[i]]);
+                //     result.push(...newData)
+                // }
+                const newData = window.XLSX.utils.sheet_to_json(zzexcel.Sheets[zzexcel.SheetNames[0]]);
+                result.push(...newData)
+                //console.log(JSON.stringify(result));
+                document.getElementById("keyword").style.visibility='visible';
+                document.getElementById("btnFind").style.visibility='visible';
+                //alert("文件加载完成");
+            }
+
+        });
+        function btnFind(){
+            let keyword = document.getElementById("keyword").value;
+            document.getElementById("keyword").value="";
+            document.getElementById("keyword").focus();
+            let isFind=0;
+            let showAnswer="";
+            
+            for (let i = 0; i < result.length; i++) {
+                    let question=JSON.stringify(result[i]);
+                    let find=question.indexOf(keyword);
+                    if(find!=-1){
+                        isFind+=1;
+                        showAnswer+=isFind+'.'+
+                                    JSON.stringify(result[i]['试题题干(必填)'])
+                                    + "<br>选项："+
+                                    JSON.stringify(result[i]["选项（用'|'隔开）"])
+                                    + "<br>答案："+
+                                    JSON.stringify(result[i]["答案（填空题用'|'隔开）(必填)"])+"<br><br>";
+                   }          
+            }
+            if(isFind!=0)document.getElementById("find").innerHTML = showAnswer;
+            else   document.getElementById("find").innerHTML = "未找到相关答案";    
+        }
+    </script>    
+</body>
+</html>
