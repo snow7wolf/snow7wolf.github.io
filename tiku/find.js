@@ -1,6 +1,6 @@
 function find() {
     'use strict';
-
+alert("hello");
     var button2 = document.createElement("button"); 
     button2.id = "id002";
     button2.style.width = "40px";
