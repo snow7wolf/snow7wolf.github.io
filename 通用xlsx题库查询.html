@@ -43,6 +43,15 @@
 
     <script type="text/javascript">
         const result = [];
+        document.getElementById('btnFind').addEventListener("click", btnFind);
+        document.getElementById('btnSave').addEventListener("click", btnSave);
+
+            let keyQuest = "题干";
+            let keyType = "型";
+            let keyOption = "选";
+            let keyAnswer = "答";
+
+
         //首先监听input框的变动，选中一个新的文件会触发change事件
         document.querySelector("#testFile").addEventListener("change", function () {
             //获取到选中的文件
@@ -71,48 +80,58 @@
                 const newData = window.XLSX.utils.sheet_to_json(zzexcel.Sheets[zzexcel.SheetNames[0]]);
                 result.push(...newData)
                 //console.log(JSON.stringify(result));
+                var keys = Object.keys(result[0]);
+                for(let i = 0; i < keys.length; i++)//key值匹配 题型，题干，选项，答案
+                {   
+
+                    if(keys[i].indexOf(keyQuest)!=-1)keyQuest=keys[i];
+                    if(keys[i].indexOf(keyType)!=-1)keyType=keys[i];
+                    if(keys[i].indexOf(keyOption)!=-1)keyOption=keys[i];
+                    if(keys[i].indexOf(keyAnswer)!=-1)keyAnswer=keys[i];
+                }
+                //alert(keyQuest+keyType+keyOption+keyAnswer);
+
                 document.getElementById("find").innerHTML = '<span style="color: #7f7ff7;">题库已加载成功：</span>' + JSON.stringify(result[0]);
             }
 
         });
 
-        document.getElementById('btnFind').addEventListener("click", btnFind);
-        document.getElementById('btnSave').addEventListener("click", btnSave);
+
         function btnFind() {
+            let showAnswer = "";
             let keyword = document.getElementById("keyword").value;
             document.getElementById("keyword").value = "";
             document.getElementById("keyword").focus();
             let isFind = 0;
-            let showAnswer = "";
-
             for (let i = 0; i < result.length; i++) {
                 let question = JSON.stringify(result[i]);
                 let find = question.indexOf(keyword);
                 if (find != -1) {
                     isFind += 1;
                     showAnswer += isFind + '.' +
-                        JSON.stringify(result[i]['试题题干(必填)'])
+                        JSON.stringify(result[i][keyQuest])
                         + "<br>选项：" +
-                        JSON.stringify(result[i]["选项（用'|'隔开）"])
+                        JSON.stringify(result[i][keyOption])
                         + "<br>答案：" +
-                        JSON.stringify(result[i]["答案（填空题用'|'隔开）(必填)"]) + "<br><br>";
+                        JSON.stringify(result[i][keyAnswer]) + "<br><br>";
                 }
             }
             if (isFind != 0) document.getElementById("find").innerHTML = '<span style="color: #7f7ff7;">找到' + isFind + '条相关答案：</span><br>' + showAnswer;
             else document.getElementById("find").innerHTML = "未找到相关答案";
         }
+
         function btnSave() {
             let showAnswer = "";
             for (let i = 0; i < result.length; i++) {
-                showAnswer += result[i]['试题类型(必填，题型请用下拉菜单实现）']
+                showAnswer += result[i][keyType]
                     + "题<br>" +
-                    result[i]['试题题干(必填)']
+                    result[i][keyQuest]
                     + "<br>" +
-                    processData(String(result[i]["选项（用'|'隔开）"]))
+                    processData(String(result[i][keyOption]))
                     + "答案:" +
-                    result[i]["答案（填空题用'|'隔开）(必填)"] + "<br><br>";
+                    result[i][keyAnswer] + "<br><br>";
             }
-            showAnswer = showAnswer.replace(new RegExp('多选题', "g"), '选择题');
+            showAnswer = showAnswer.replace(new RegExp('多选题', "g"), '选择题');//佛脚题库格式中多选为选择题
             document.getElementById("find").innerHTML = showAnswer;
             showAnswer = showAnswer.replace(new RegExp('<br>', "g"), '\r\n');//转换html换行格式用来保存为文件
             var blob = new Blob([showAnswer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
