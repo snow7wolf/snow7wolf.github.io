@@ -8,6 +8,7 @@
     <title>题库查找</title>
     <!-- <script type="text/javascript" src='./xlsx.core.min.js'></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.1/xlsx.core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         .lqwvje-btn {
             display: inline-block;
@@ -101,14 +102,39 @@
             else document.getElementById("find").innerHTML = "未找到相关答案";
         }
         function btnSave() {
-            let showAnswer="";
+            let showAnswer = "";
             for (let i = 0; i < result.length; i++) {
-                    showAnswer += result[i]['试题题干(必填)'];
-
-
+                showAnswer += result[i]['试题类型(必填，题型请用下拉菜单实现）']
+                    + "题<br>" +
+                    result[i]['试题题干(必填)']
+                    + "<br>" +
+                    processData(String(result[i]["选项（用'|'隔开）"]))
+                    + "答案:" +
+                    result[i]["答案（填空题用'|'隔开）(必填)"] + "<br><br>";
             }
-            document.getElementById("find").innerHTML=showAnswer;
+            showAnswer = showAnswer.replace(new RegExp('多选题', "g"), '选择题');
+            document.getElementById("find").innerHTML = showAnswer;
+            showAnswer = showAnswer.replace(new RegExp('<br>', "g"), '\r\n');//转换html换行格式用来保存为文件
+            var blob = new Blob([showAnswer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+            var currentDate = new Date();
+            var year = currentDate.getFullYear();
+            var month = ("0" + (currentDate.getMonth() + 1)).slice(-2); // 注意月份需要加1，并且保证两位数字格式
+            var date = ("0" + currentDate.getDate()).slice(-2); // 保证日期为两位数字格式
+            var formattedDate = year + "-" + month + "-" + date;
+            var fileName="佛脚题库"+formattedDate+".docx";
+            saveAs(blob, fileName);
+        }
 
+        //格式化试题选项
+        function processData(inputString) {
+            if (inputString === 'undefined') return "";
+            let data = inputString.split('|');
+            let result = '';
+            for (let i = 0; i < data.length; i++) {
+                let prefix = String.fromCharCode(65 + i);
+                result += prefix + '.' + data[i] + '<br>';
+            }
+            return result;
         }
 
     </script>
