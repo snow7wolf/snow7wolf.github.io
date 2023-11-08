@@ -149,6 +149,7 @@
         //格式化试题选项
         function processData(typeString,inputString) {
             if (typeString === '判断') return "";
+            if (inputString===undefined) return "";
             let data = inputString.split('|');
             let result = '';
             for (let i = 0; i < data.length; i++) {
