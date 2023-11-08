@@ -109,11 +109,11 @@
                 if (find != -1) {
                     isFind += 1;
                     showAnswer += isFind + '.' +
-                        JSON.stringify(result[i][keyQuest])
-                        + "<br>选项：" +
-                        JSON.stringify(result[i][keyOption])
-                        + "<br>答案：" +
-                        JSON.stringify(result[i][keyAnswer]) + "<br><br>";
+                        result[i][keyQuest]
+                        + "<br>" +
+                        processData(result[i][keyType],result[i][keyOption])
+                        + '答案：<span style="color:#FF6666">'+
+                        result[i][keyAnswer] + "</span><br><br>";
                 }
             }
             if (isFind != 0) document.getElementById("find").innerHTML = '<span style="color: #7f7ff7;">找到' + isFind + '条相关答案：</span><br>' + showAnswer;
@@ -127,11 +127,13 @@
                     + "题<br>" +
                     result[i][keyQuest]
                     + "<br>" +
-                    processData(String(result[i][keyOption]))
+                    processData(result[i][keyType],result[i][keyOption])
                     + "答案:" +
                     result[i][keyAnswer] + "<br><br>";
             }
             showAnswer = showAnswer.replace(new RegExp('多选题', "g"), '选择题');//佛脚题库格式中多选为选择题
+            showAnswer = showAnswer.replace(new RegExp(' ',"g"),'');//去空格
+            showAnswer = showAnswer.replace(new RegExp('\t',"g"),'');//去制表符
             document.getElementById("find").innerHTML = showAnswer;
             showAnswer = showAnswer.replace(new RegExp('<br>', "g"), '\r\n');//转换html换行格式用来保存为文件
             var blob = new Blob([showAnswer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
@@ -145,8 +147,8 @@
         }
 
         //格式化试题选项
-        function processData(inputString) {
-            if (inputString === 'undefined') return "";
+        function processData(typeString,inputString) {
+            if (typeString === '判断') return "";
             let data = inputString.split('|');
             let result = '';
             for (let i = 0; i < data.length; i++) {
