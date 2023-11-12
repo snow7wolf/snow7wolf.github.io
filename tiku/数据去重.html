@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>数据去重</title>
+</head>
+
+<body>
+    <input type="file" id="fileInput">
+    <button onclick="processFile()">读取文件</button>
+    <script>
+        function processFile() {
+            var fileInput = document.getElementById('fileInput');
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var contents = e.target.result;
+                var items = contents.split('ⓩ');
+                var uniqueItems = Array.from(new Set(items));
+                var uniqueStr = uniqueItems.join(',');
+                let newWindow=window.open();
+                newWindow.document.write("去重后数据:<br>clawData= \""+uniqueStr+"\"<br><br>");
+                //console.log(uniqueStr);
+            };
+            let abc=reader.readAsText(file);
+        }
+    </script>
+</body>
+
+</html>
