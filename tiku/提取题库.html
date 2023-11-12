@@ -127,12 +127,11 @@
                     + "," +
                     result[i][keyQuest]
                     + "," +
-                    processData(result[i][keyType],result[i][keyOption])
-                    + "," +
-                    result[i][keyAnswer];
+                    result[i][keyAnswer]
+                    + "," ;
             }
             showAnswer = showAnswer.replace(new RegExp(' ',"g"),'');//去空格
-            showAnswer = showAnswer.replace(new RegExp('\t',"g"),'');//去制表符
+            //showAnswer = showAnswer.replace(new RegExp('\t',"g"),'');//去制表符
             document.getElementById("find").innerHTML = showAnswer;
         }
 
