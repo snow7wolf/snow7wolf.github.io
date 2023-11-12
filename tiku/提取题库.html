@@ -123,6 +123,7 @@
         function btnSave() {
             let showAnswer = "";
             for (let i = 0; i < result.length; i++) {
+                result[i][keyQuest]=result[i][keyQuest].replace(new RegExp(',',"g"),'，');//转换半角,为全角，
                 showAnswer += result[i][keyType]
                     + "," +
                     result[i][keyQuest]
@@ -130,7 +131,7 @@
                     result[i][keyAnswer]
                     + "," ;
             }
-            showAnswer = showAnswer.replace(new RegExp(' ',"g"),'');//去角空格
+            showAnswer = showAnswer.replace(new RegExp(' ',"g"),'');//去半角空格
             showAnswer = showAnswer.replace(new RegExp(' ',"g"),'');//去全角空格
             showAnswer = showAnswer.replace(new RegExp('\t',"g"),'');//去制表符
             document.getElementById("find").innerHTML = showAnswer;
