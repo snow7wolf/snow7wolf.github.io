@@ -130,8 +130,9 @@
                     result[i][keyAnswer]
                     + "," ;
             }
-            showAnswer = showAnswer.replace(new RegExp(' ',"g"),'');//去空格
-            //showAnswer = showAnswer.replace(new RegExp('\t',"g"),'');//去制表符
+            showAnswer = showAnswer.replace(new RegExp(' ',"g"),'');//去角空格
+            showAnswer = showAnswer.replace(new RegExp(' ',"g"),'');//去全角空格
+            showAnswer = showAnswer.replace(new RegExp('\t',"g"),'');//去制表符
             document.getElementById("find").innerHTML = showAnswer;
         }
 
